@@ -1,0 +1,226 @@
+/* Resets and Variables */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(-45deg, #1a0b2e, #4b1d52, #8b2b64, #c93b6e);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    color: #ffffff;
+    overflow: hidden;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.content-wrapper {
+    text-align: center;
+    z-index: 10;
+    width: 100%;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 30px;
+    text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.title.hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+/* El Escenario 3D */
+.scene {
+    position: relative;
+    width: 320px;
+    height: 220px;
+    margin: 0 auto;
+    perspective: 1200px;
+    cursor: pointer;
+}
+
+/* Partes del Sobre */
+.envelope-back, .envelope-front {
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.envelope-back {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #ff4081, #d50000);
+    border-radius: 10px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    z-index: 1;
+}
+
+.scene:hover .envelope-back, .scene:hover .envelope-front {
+    transform: translateY(-5px);
+}
+
+.envelope-front {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 3;
+    pointer-events: none; /* Para que los clicks pasen a .scene */
+}
+
+.pocket {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 160px solid #ff5252;
+    border-right: 160px solid #ff5252;
+    border-bottom: 110px solid #ff1744;
+    border-top: 110px solid transparent;
+    border-radius: 0 0 10px 10px;
+}
+
+.flap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 0; height: 0;
+    border-left: 160px solid transparent;
+    border-right: 160px solid transparent;
+    border-top: 130px solid #ff1744;
+    border-bottom: 90px solid transparent;
+    border-radius: 10px 10px 0 0;
+    transform-origin: top center;
+    transition: transform 0.6s ease-in-out, z-index 0s 0.3s;
+    z-index: 4;
+}
+
+.heart-seal {
+    position: absolute;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 35px;
+    z-index: 5;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+}
+
+.scene:hover .heart-seal {
+    transform: translateX(-50%) scale(1.1);
+}
+
+/* La Carta */
+.letter {
+    position: absolute;
+    bottom: 10px; left: 50%;
+    transform: translateX(-50%);
+    width: 290px;
+    height: 190px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    border-radius: 8px;
+    z-index: 2;
+    transition: all 1s cubic-bezier(0.2, 0.8, 0.2, 1); /* Suave expansión */
+    padding: 30px;
+    box-sizing: border-box;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    color: #333;
+    font-family: 'Caveat', cursive;
+    font-size: 1.5rem;
+    line-height: 1.4;
+    overflow-y: auto;
+    overflow-x: hidden;
+    cursor: default;
+}
+
+/* Animaciones - Estado 1: Abierto */
+.scene.is-open .flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+}
+
+.scene.is-open .heart-seal {
+    opacity: 0;
+}
+
+/* Animaciones - Estado 2: Carta Extraída al Centro */
+.scene.is-extracted .envelope-back,
+.scene.is-extracted .envelope-front {
+    transform: translateY(150px) scale(0.8) !important;
+    opacity: 0;
+}
+
+.scene.is-extracted .letter {
+    bottom: 50%;
+    transform: translate(-50%, 50%); /* Centrar absoluto */
+    width: 360px;
+    height: 550px;
+    max-height: 85vh;
+    max-width: 90vw;
+    z-index: 100;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    background: rgba(255, 255, 255, 1);
+}
+
+/* Foto Reveal */
+.photo-container {
+    margin-top: 30px;
+    text-align: center;
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    display: none;
+}
+
+.photo-container img {
+    max-width: 100%;
+    border-radius: 8px;
+    border: 6px solid white;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    transform: rotate(-2deg);
+    transition: transform 0.4s ease;
+}
+
+.photo-container img:hover {
+    transform: rotate(0deg) scale(1.05);
+}
+
+.photo-caption {
+    margin-top: 10px;
+    font-size: 1.6rem;
+    color: #d63031;
+    font-weight: 600;
+}
+
+/* Aparecer Foto (desde JavaScript) */
+.letter.show-photo-animate .photo-container {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
+
+/* Scrollbar para la carta extraída */
+.letter::-webkit-scrollbar { width: 6px; }
+.letter::-webkit-scrollbar-track { background: transparent; }
+.letter::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+
+/* Partículas animadas */
+.particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+.particle { position: absolute; bottom: -50px; border-radius: 50%; animation: floatUp linear infinite; display: flex; align-items: center; justify-content: center; }
+@keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 10% { opacity: 0.8; } 90% { opacity: 0.8; } 100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; } }
+
+/* Cursor parpadeante */
+.cursor { display: inline-block; width: 2px; height: 1em; background-color: #333; animation: blink 0.7s infinite; vertical-align: text-bottom; margin-left: 2px; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
